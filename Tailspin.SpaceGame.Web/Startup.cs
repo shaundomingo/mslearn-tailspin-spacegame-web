@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TailSpin.SpaceGame.Web.Models;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using TailSpin.SpaceGame.Web.Models;
+using Microsoft.AspNetCore.Http;
+
 
 namespace TailSpin.SpaceGame.Web
 {
@@ -30,6 +34,13 @@ namespace TailSpin.SpaceGame.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            
+            // services.Configure<MvcOptions>(options =>
+            // {
+            //     options.EnableEndpointRouting = false;
+            // });
+
             // Add document stores. These are passed to the HomeController constructor.
             services.AddSingleton<IDocumentDBRepository<Score>>(new LocalDocumentDBRepository<Score>(@"SampleData/scores.json"));
             services.AddSingleton<IDocumentDBRepository<Profile>>(new LocalDocumentDBRepository<Profile>(@"SampleData/profiles.json"));
@@ -50,12 +61,13 @@ namespace TailSpin.SpaceGame.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+
             app.UseRouting();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
-             {
+            {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
